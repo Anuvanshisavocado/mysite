@@ -1,0 +1,21 @@
+name: Daily Commit - 23f3002037@ds.study.iitm.ac.in
+
+on:
+  schedule:
+    - cron: "5 5 * * *"  # Runs daily at 05:05 UTC
+  workflow_dispatch:
+
+jobs:
+  auto-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: 23f3002037@ds.study.iitm.ac.in - Make empty commit
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git commit --allow-empty -m "Daily update [skip ci]"
+          git push
