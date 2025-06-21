@@ -1,21 +1,45 @@
-name: Daily Commit - 23f3002037@ds.study.iitm.ac.in
+name: Daily Repository Update # Reverted to original name, but you can keep yours if preferred
 
 on:
   schedule:
-    - cron: "5 5 * * *"  # Runs daily at 05:05 UTC
-  workflow_dispatch:
+    # This cron expression means the workflow will run at 05:05 UTC every day, as you specified.
+    - cron: "5 5 * * *"
+  workflow_dispatch: # Allows you to manually trigger the workflow from the GitHub UI
 
 jobs:
-  auto-commit:
+  daily-commit: # Reverted to original job name, but you can keep 'auto-commit' if preferred
     runs-on: ubuntu-latest
+    permissions:
+      # THIS IS CRUCIAL: Add permissions for the workflow to write to the repository
+      contents: write
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: 23f3002037@ds.study.iitm.ac.in - Make empty commit
+      - name: Create or update a daily activity file - 23f3002037@ds.study.iitm.ac.in
+        # This step uses your provided email in its name, as requested.
+        # It appends the current UTC timestamp to a file named 'daily-activity.log'.
+        # This ensures there's always a change to commit each day, fulfilling
+        # the "Activity Tracking" and "Automated Documentation" requirements.
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git commit --allow-empty -m "Daily update [skip ci]"
-          git push
+          DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          echo "Daily update triggered on: $DATE" >> daily-activity.log
+          echo "This file tracks daily automated activity in the repository." >> daily-activity.log
+
+      - name: Commit and push changes
+        # Configure Git with the bot's identity using --local for best practice in actions.
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # Stage the changes to the daily-activity.log file.
+          git add daily-activity.log
+          
+          # Commit the changes. The `|| exit 0` ensures the workflow doesn't fail
+          # if no changes were detected (though the previous step ensures there will be changes).
+          git commit -m "Automated daily update: $(date -u +"%Y-%m-%d %H:%M UTC") [skip ci]" || exit 0
+          
+          # Push the committed changes to the 'main' branch of your repository.
+          # Explicitly specifying 'origin main' is good practice.
+          git push origin main # Or 'origin master' if that's your default branch
