@@ -3,7 +3,9 @@ name: Daily Repository Update # Reverted to original name, but you can keep your
 on:
   schedule:
     # This cron expression means the workflow will run at 05:05 UTC every day, as you specified.
-    - cron: "5 5 * * *"
+    # To run within 5 minutes, we'll adjust this to a time very close to the current UTC time.
+    # (Assuming current time is around 10:29 PM IST / 16:59 UTC, setting to 17:05 UTC)
+    - cron: "9 17 * * *" # This will run daily at 17:05 UTC
   workflow_dispatch: # Allows you to manually trigger the workflow from the GitHub UI
 
 jobs:
