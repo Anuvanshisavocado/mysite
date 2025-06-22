@@ -1,47 +1,48 @@
-name: Daily Repository Update # Reverted to original name, but you can keep yours if preferred
+name: Daily Repository Update # Descriptive name for your workflow
 
 on:
   schedule:
-    # This cron expression means the workflow will run at 05:05 UTC every day, as you specified.
-    # To run within 5 minutes, we'll adjust this to a time very close to the current UTC time.
-    # (Assuming current time is around 10:29 PM IST / 16:59 UTC, setting to 17:05 UTC)
-    - cron: "9 17 * * *" # This will run daily at 17:05 UTC
-  workflow_dispatch: # Allows you to manually trigger the workflow from the GitHub UI
+    # This cron expression will schedule the workflow to run daily at 17:05 UTC.
+    # You can adjust "5 17" to any specific minute and hour (UTC) you prefer.
+    - cron: "42 15 * * *"
+  workflow_dispatch: # This allows you to manually trigger the workflow from the GitHub UI
 
 jobs:
-  daily-commit: # Reverted to original job name, but you can keep 'auto-commit' if preferred
-    runs-on: ubuntu-latest
+  daily-commit: # Name for this job
+    runs-on: ubuntu-latest # The type of machine to run the job on
     permissions:
-      # THIS IS CRUCIAL: Add permissions for the workflow to write to the repository
+      # THIS IS CRUCIAL: Grants write permissions to the GITHUB_TOKEN
+      # so the workflow can push commits to your repository.
       contents: write
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout repository # Step to get your repository's code
+        uses: actions/checkout@v4 # Uses the official action to checkout your repo
 
       - name: Create or update a daily activity file - 23f3002037@ds.study.iitm.ac.in
-        # This step uses your provided email in its name, as requested.
+        # This step's name includes your email as required.
         # It appends the current UTC timestamp to a file named 'daily-activity.log'.
-        # This ensures there's always a change to commit each day, fulfilling
-        # the "Activity Tracking" and "Automated Documentation" requirements.
+        # This creates a detectable change that Git can commit each day.
         run: |
-          DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          echo "Daily update triggered on: $DATE" >> daily-activity.log
-          echo "This file tracks daily automated activity in the repository." >> daily-activity.log
+          DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ") # Get current UTC timestamp
+          echo "Daily update triggered on: $DATE" >> daily-activity.log # Append to file
+          echo "This file tracks daily automated activity in the repository." >> daily-activity.log # Append another line
 
-      - name: Commit and push changes
-        # Configure Git with the bot's identity using --local for best practice in actions.
+      - name: Commit and push changes # Step to commit the changes and push them
         run: |
+          # Configure Git with the GitHub Actions bot's identity.
+          # Using --local sets this for the current repository checkout only.
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
-          # Stage the changes to the daily-activity.log file.
+          # Stage the 'daily-activity.log' file for commit.
           git add daily-activity.log
           
-          # Commit the changes. The `|| exit 0` ensures the workflow doesn't fail
-          # if no changes were detected (though the previous step ensures there will be changes).
+          # Create a commit.
+          # --allow-empty if no changes (though our previous step ensures changes)
+          # -m provides the commit message. [skip ci] prevents recursive workflow runs.
           git commit -m "Automated daily update: $(date -u +"%Y-%m-%d %H:%M UTC") [skip ci]" || exit 0
           
-          # Push the committed changes to the 'main' branch of your repository.
-          # Explicitly specifying 'origin main' is good practice.
-          git push origin main # Or 'origin master' if that's your default branch
+          # Push the committed changes to the 'main' branch.
+          # Change 'main' to 'master' if that's your repository's default branch.
+          git push origin main
