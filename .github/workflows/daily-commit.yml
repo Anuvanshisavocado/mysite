@@ -6,7 +6,7 @@ on:
     # This fulfills the "runs once per day (must use specific hours/minutes, not wildcards)" requirement.
     # The assignment's "within 5 minutes" check refers to the commit time relative to the workflow run,
     # which the other steps will ensure. You do NOT need to change this cron for validation.
-    - cron: "0 0 * * *" 
+    - cron: "32 16 * * *" 
   workflow_dispatch: # This allows you to manually trigger the workflow from the GitHub UI
 
 jobs:
